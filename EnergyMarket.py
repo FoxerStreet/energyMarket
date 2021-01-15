@@ -28,9 +28,15 @@ def market(number_of_days, temperature, clock_ready,):
         e.join()"""
 
 
-def weather(clock_ready):
-    while clock_ready.wait(delay):
-
+def weather(temperature, clock_ready, weather_ready, weather_connection):
+    
+    while clock_ready.wait(1.5 * delay):
+        temperature[0] = random.randint(-10,30) #temperature en degré
+        weather_connection.send(temperature[0])
+    
+        weather_ready.set()
+        time.sleep(delay/2)
+	
 def terminal(clock_ready):
     while clock_ready.wait(delay):
 
