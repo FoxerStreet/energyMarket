@@ -1,0 +1,111 @@
+------------------
+|     Home :     |
+------------------
+
+reçoit des infos de température 
+
+policy = random (1,3) (si 1 always sell si 2 always give si 3  sell if no taker)
+
+#Temp : à récupérer de weather
+
+	t<0 => cons += 10
+	0<=t<10 cons += 5
+	sinon rien
+
+cons et prod fixe cons = 10 prod = 20
+balance = prod - cons
+
+
+#Prod/cons énergie
+
+si balance <= 0 rien
+
+si balance > 0 && policy == 1 :
+	 on vend au marché
+
+si balance > 0 && policy == 2 on donne en prio aux balancex negatives 
+
+si balance > 0 && policy = 3 on donne si des balances negatives, sinon on vend au marché
+
+
+--------------------
+|     Weather:     |
+--------------------
+
+#modèle simple : on tire une valeur entre -10 et 20 °
+implication sur la surconsomation 
+
+temp = random.randint(-10,20)
+
+temp à envoyer à home (pipes)
+
+
+------------------
+|     Market:    |
+------------------
+
+
+
+prix initial = ...
+
+le prix va évoluer selon :
+
+- l'énergie vendue au marché 
+- la température 
+- tension politique (définir des évènements qui seront  à 1 s'ils influent et à 0 sinon et qui ont différents coef beta)
+- contexte economique (définir des évènements qui seront  à 1 s'ils influent et à 0 sinon et qui ont différents coef beta)
+
+
+1) récupérer la qté d'énergie vendue, mettre alpha_0 à 0.5 et mettre f_0 à 2*qté énergié vendu
+
+2) récupérer la température du jour, mettre alpha_1 = 0.5 et mettre f_1 à 2*(-température) (si temp <0 alors le prix augmente et inversement si temp >0)
+
+3) récupérer un evmt aléatoire politique choisi dans politics, et le coef associé beta_0 
+
+4) récupérer un evmt aléatoire économique choisi dans economics, et le coef associé beta_1
+
+
+Prix_du_jour = gamma * prix_du_jour_avant + alpha_0*f_0 + alpha_1*f_1 + beta_0* 
+
+
+------------------
+|    Politics:   |
+------------------
+
+évenements = [ [manifestation pro trump, beta_0 = 0.7],
+	       [manifestation blm, beeta_0 = 0.4],
+	       [rien, beta_0 = 0],
+	       [scandale lobby énergie beta_0 = -0.4] ]
+
+evm = évenements[random.randint(0,4)]
+envoyer l'évenement au market
+
+------------------
+|   Economics:   |
+------------------
+
+
+economics = [ [krach boursier, beta_1 = 0.8],
+	      [breizhit, beta_1 = 0.2],
+	      [rien, beta_1 = 0],
+	      [passage au franc, 0.4] ]
+
+eco = economics[random.randint(0,4)]
+envoyer l'eco au market
+
+
+------------------
+|     Horloge:    |
+------------------
+
+-> objectif : gérer les jours 
+tous les jours on recommence le process ie nouvelle consommation, nouvel evmt, nouvel eco et nouveau prix
+
+c=0
+while c<nb_de_jours :
+	attendre 4 s 
+	envoyer le signal aux autres process disant qu'ils peuvent recommencer
+
+	
+system.exit()
+
