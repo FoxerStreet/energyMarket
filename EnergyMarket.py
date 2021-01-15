@@ -31,7 +31,7 @@ def market(number_of_days, temperature, clock_ready,):
 def weather(temperature, clock_ready, weather_ready, weather_connection):
     
     while clock_ready.wait(1.5 * delay):
-        temperature[0] = random.randint(-10,30) #temperature en degré
+        temperature[0] = random.randint(-10,20) #temperature en degré
         weather_connection.send(temperature[0])
     
         weather_ready.set()
